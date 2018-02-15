@@ -1,6 +1,6 @@
 # First, let's query for all of the likes in your social
 # network and store them in a slightly more convenient
-# data structure as a dictionary keyed on each friend's name.
+# data structure as a dictionary keyed on each friend's name. Even testen
 import facebook
 from prettytable import PrettyTable
 from collections import Counter
