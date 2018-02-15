@@ -1,7 +1,7 @@
 import facebook
 import json
 
-# A helper function to pretty-print Python objects as JSON
+# A helper function to pretty-print Python objects as JSONthijstest
 def pp(o):
         print json.dumps(o, indent = 1)
 
