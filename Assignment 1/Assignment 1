@@ -1,0 +1,134 @@
+# Exercise 1
+import twitter # Tell Python to use the twitter package
+CONSUMER_KEY = 'KZQzFDMJYpT6ItsWSjxNX5BUa'
+CONSUMER_SECRET = 'tNEuICQv1R683szLJbnFzbORCRrdJe9YSMvEfJQONL1MKVraCq'
+OAUTH_TOKEN = '2491161300-pu2av8XhkU2K1MPaZzpYhbXtVFs3qVfY9Aedd7v' # to get the oauth credential you need to click on the 'Create my access token' button and wait few moments
+OAUTH_TOKEN_SECRET = 'lvAaXupAuZgTFNlYN2BwJYmuvIoy9T3VOm0TllcgEuLyu'
+auth = twitter.oauth.OAuth(OAUTH_TOKEN, OAUTH_TOKEN_SECRET,CONSUMER_KEY, CONSUMER_SECRET)
+twitter_api = twitter.Twitter(auth=auth)
+print twitter_api # Nothing to see by displaying twitter_api except that it's now a defined variable
+
+# Exercise 2
+WORLD_WOE_ID = 1 # The Yahoo! Where On Earth ID for the entire world
+world_trends = twitter_api.trends.place(_id=WORLD_WOE_ID) # get back a callable
+# print world_trends
+
+## Exercise 2.1
+q = '#FalconX' # XXX: Set this variable to a trending topic, or anything else you like. 
+count = 100 # number of results to retrieve
+
+# See https://dev.twitter.com/docs/api/1.1/get/search/tweets for more info
+
+search_results = twitter_api.search.tweets(q=q, count=count) # search for your query 'q' 100 times
+statuses = search_results['statuses'] # extract the tweets found
+
+import json
+print json.dumps(statuses[0], indent=1)
+
+status_texts = [ status['text']
+    for status in statuses ]
+
+screen_names = [ user_mention['screen_name']
+    for status in statuses
+        for user_mention in status['entities']['user_mentions'] ]
+
+hashtags = [ hashtag['text']
+    for status in statuses
+        for hashtag in status['entities']['hashtags'] ]
+
+# Compute a collection of all words from all tweets
+words = [ w
+    for t in status_texts
+        for w in t.split() ] #split the string on the empty spaces
+
+# Explore the first 5 items for each...
+print json.dumps(status_texts[0:5], indent=1)
+print json.dumps(screen_names[0:5], indent=1)
+print json.dumps(hashtags[0:5], indent=1)
+print json.dumps(words[0:5], indent=1)
+
+# ------------------------------------------------
+
+# Exercise 3
+from collections import Counter
+for item in [words, screen_names, hashtags]:
+    c = Counter(item)
+
+print c.most_common()[:10] # top 10
+
+import cPickle
+f = open("myData.pickle", "wb") # create a file handle for writing (w) in binary mode (b) named myData.pickle, 
+cPickle.dump(words, f) # write the contents of list 'words' to file 'f'
+f.close() #  clean up after yourself
+
+from prettytable import PrettyTable
+for label, data in (('Word', words),
+        ('Screen Name', screen_names),
+        ('Hashtag', hashtags)):
+    pt = PrettyTable(field_names=[label, 'Count'])
+    c = Counter(data)
+    [ pt.add_row(kv) for kv in c.most_common()[:10] ]
+    pt.align[label], pt.align['Count'] = 'l', 'r' # Set column alignment
+    print pt
+
+# Define a function for computing lexical diversity
+def lexical_diversity(tokens): # This is the way to declare user defined functions
+    return 1.0*len(set(tokens))/len(tokens)
+
+# Define a function for computing the average number of words per tweet
+def average_words(statuses):
+    total_words = sum([ len(s.split()) for s in statuses ])
+    return 1.0*total_words/len(statuses) # Prior to Python 3.0, the division operator (/) applies the floor function and returns an integer value (unless one of the operands is a floating-point value). Multiply either the numerator or the denominator by 1.0 to avoid truncation errors.
+
+# Let's use these functions:
+
+print lexical_diversity(words)
+print lexical_diversity(screen_names)
+print lexical_diversity(hashtags)
+print average_words(status_texts)
+
+retweets = [(status['retweet_count'],
+    status['retweeted_status']['user']['screen_name'],
+    status['text'])# Store out a tuple of these three values
+    for status in statuses # for each status
+    if status.has_key('retweeted_status') # ... so long as the status meets this condition.
+    ]
+
+# Slice off the first 5 from the sorted results and display each item in the tuple
+pt = PrettyTable(field_names=['Count', 'Screen Name', 'Text'])
+[ pt.add_row(row) for row in sorted(retweets, reverse=True)[:5] ]
+pt.max_width['Text'] = 50
+pt.align= 'l'
+print pt
+
+_retweets = twitter_api.statuses.retweets(id=961359174230773765) # Get the original tweet id for a tweet from its retweeted_status node and insert it here
+print [r['user']['screen_name'] for r in _retweets]
+
+word_counts = sorted(Counter(words).values(), reverse=True)
+import matplotlib.pyplot as plt
+plt.loglog(word_counts)
+plt.ylabel("Freq")
+plt.xlabel("Word Rank")
+plt.show()
+
+for label, data in (('Words', words), # Build a frequency map for each set of data
+    ('Screen Names', screen_names),
+        ('Hashtags', hashtags)):
+            c = Counter(data)
+
+# plot the values
+plt.hist(c.values())
+
+# Add a title and y-label ...
+plt.title(label)
+plt.ylabel("Number of items in bin")
+plt.xlabel("Bins (number of times an item appeared)")
+plt.show()
+
+counts = [count for count, _, _ in retweets]
+plt.hist(counts)
+plt.title("Retweets")
+plt.xlabel('Bins (number of times retweeted)')
+plt.ylabel('Number of tweets in bin')
+print counts
+plt.show()

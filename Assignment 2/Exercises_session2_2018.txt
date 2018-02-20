@@ -1,0 +1,73 @@
+*****************************************************
+*  The Social Web                                   *
+*  2017-2018 mIS, mCS, mAI		            *
+*  Instructors Davide Ceolin, Cristina Bucur        *
+*                                                   *
+*  Exercises for Hands-on session 2                 *
+*  15 February 2018 11:00 - 12:45                   *
+*  WN-S201, WN-S205, WN-S209                        *
+*****************************************************
+
+Prerequisites:
+
+- Python 2.6 or 2.7
+- Python packages: facebook-sdk, networkx, requests, ipython
+- In case you did not attend the first session, you should also install the following Python package: prettytable
+
+Make sure to start your virtual environment (e.g. use $ source socialEnv/bin/activate for Linux and Mac and socialEnv\Scripts\activate for Windows) and that the python packages listed above are installed.
+
+For these exercises you have to register as a Facebook Developer. You can do this by going to https://developers.facebook.com/. You can either login with your Facebook account, or Register as a developer and accept the terms. You can just continue without providing details. Get the user access token by following these steps:
+
+- Go to the Graph API Explorer page: https://developers.facebook.com/tools/explorer
+- Press "Get Token", then "Get User Access Token"  to open an overlay window.
+- Check the "user_friends" box to set permission for retrieving your friend list. Click "Get Access Token".
+- Check your query by building it with the visual editor on the left side of the page. From the tree view, search and add field "friends", and then "likes" as a child of "friends". Click "Submit" to view the results of your query.
+- Copy your access token from the text box at the top of the page to use in your code.
+
+
+-------------------------------------------------------------------------------
+
+Task 1: Make sure you know what all permissions mean. Think about which permissions you need to just find out who of your friends are also friends with each other.
+
+-------------------------------------------------------------------------------
+
+Because these are longer exercises than in the first session, we are going to store them in a script. This is nothing more than a plain text document that contains all the commands that we will load into Python. To load scripts you type "$ python <nameofscript.py>" on your bash command line (indicated by the $). This tells the computer that it's going to read python commands, from a particular file. 
+
+During this session we will use Facebook Graph API (http://developers.facebook.com/docs/reference/api) which uses the open Graph protocol (http://opengraphprotocol.org). This API will be used to query Facebook in the remainder of this session.
+
+Exercise 1: Gaining access to your Facebook account and query for information (based on Example 2-2 and 2-5 in Mining the Social Web). 
+
+Copy the code you find in https://raw.githubusercontent.com/VU-Amsterdam-Web-Media-Group/TheSocialWeb2016/master/scripts/HandsOn2Exercise1.txt to a plain text document, and replace token with your user access token. Call the file facebook_graph_query.py and invoke it on the bash:
+$ python facebook_graph_query.py
+The output of facebook_graph_query.py retrieves information about yourself, your friends and searches for pages mentioning the UVA and VU. Invoking this script will show results but in the end returns an error. We are going to solve this in the next exercise.
+
+
+Exercise 2: Comparing likes between UVA and VU pages (based on Example 9-5 in Mining the Social Web). The facebook_graph_query.py has code that enables a comparison of the number of likes. Find the correct university id in the previous output and add them to the uva_id and vu_id variables in facebook_graph_query.py. To find out which university is better liked (on Facebook) execute the script again, which should now execute without an error.
+
+-------------------------------------------------------------------------------
+Task 2: Read the documentation of the Facebook Graph API and see if you can retrieve information about things other than pages. Such as groups or pages. 
+-------------------------------------------------------------------------------
+
+Exercise 3: Analyzing things your friends like (based on Example 2-7, 2-8 and 2-9 in Mining the Social Web)
+
+Copy the code you find in https://raw.githubusercontent.com/VU-Amsterdam-Web-Media-Group/TheSocialWeb2016/master/scripts/HandsOn2Exercise2.txt to a plain text document, and add your Facebook token again (refresh if expired). Call the file facebook_calculate_likes.py and invoke it on the bash:
+$ python facebook_calculate_likes.py
+
+
+The initial output is a python dictionary, which is hard to read. Make the line 'print likes' a comment by adding a # in front and uncomment the other print statements, to get aggregate tables. Figure out how these tables are generated.
+
+
+Exercise 4: Visualising a graph of mutual friendships (based on Example 2-13 in Mining the Social Web) In this final example, you're going to visualise your entire network and check which of your friends are mutual friends. You can find the code to create a graph at https://raw.githubusercontent.com/VU-Amsterdam-Web-Media-Group/TheSocialWeb2016/master/scripts/HandsOn2Exercise3.txt. Add the token and save this script as facebook_friends_graph.py. Create a viz folder in your working directory. When you run this script it will output a force.json file in the viz folder.
+
+-------------------------------------------------------------------------------
+Optional Task: Can you modify the graph such that it writes something other than your friends' names as node labels. For example their locations? Can you use different colours for connections between you and male friends and female friends?
+-------------------------------------------------------------------------------
+
+Exercise 5:  Download the following https://raw.githubusercontent.com/VU-Amsterdam-Web-Media-Group/TheSocialWeb2016/master/lib/force.html file and put it in the viz folder. Opening this file with a browser (might not work with Chrome or Interner Explorer) will load the json file and provide you with a visual representation of the graph based on the http://d3js.org/ libraries. Best try with Firefox.
+
+If the force.html file is not loading properly in your browser, you might need to enable reading local files from your browsers (see these instructions: https://github.com/mrdoob/three.js/wiki/How-to-run-things-locally or https://threejs.org/docs/#manual/introduction/How-to-run-thing-locally).
+
+-------------------------------------------------------------------------------
+Task 5: Explore the d3js libraries and think of other types of visualisations that may make these connections insightful. 
+------------------------------------------------------------------------------- 
+
